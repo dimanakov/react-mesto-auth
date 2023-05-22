@@ -1,49 +1,15 @@
-import logo from './images/logo.svg';
 // import card from './images';
-import './index.css';
+import '../index.css';
+import Header from './Header.js';
+import Main from './Main.js';
+import Footer from './Footer.js';
 
 function App() {
   return (
     <div className="page">
-      <header className="header page__content">
-        <img
-          src={logo}
-          className="logo" alt="logo" />
-      </header>
-      <main>
-        <section className="profile page__content page__content_narrow"
-          aria-label="профиль пользователя">
-          <div className="profile__cover">
-            <img className="profile__avatar"
-              src="<%=require('./images/kusto.jpg')%>"
-              alt="фотография пользователя" />
-            <button className="button profile__avatar-button"
-              type="button"
-              aria-label="редактировать аватар"></button>
-          </div>
-          <div className="profile__info">
-            <div className="profile__group">
-              <h1 className="heading profile__name">Жак-Ив Кусто</h1>
-              <button className="button button_focus profile__edit-button"
-                type="button"
-                aria-label="редактировать профиль"></button>
-            </div>
-            <p className="text profile__profession">Исследователь океана</p>
-          </div>
-          <button className="button button_focus profile__add-button"
-            type="button"
-            aria-label="добавить место в галерею"></button>
-        </section>
-        <section className="elements page__content page__content_narrow"
-          aria-label="галерея посещённых мест]">
-          <ul className="elements__gallery">
-            {/* место для карточек */}
-          </ul>
-        </section>
-      </main>
-      <footer className="footer page__content page__content_narrow">
-        <p className="text footer__text">&copy; 2023 Mesto Russia</p>
-      </footer>
+      <Header />
+      <Main />
+      <Footer />
       <div className="popup popup_form popup_avatar">
         <div className="popup__container">
           <form className="form form_avatar"
