@@ -1,0 +1,19 @@
+.form__submit {
+  width: 100%;
+  margin: 18px auto 36px;
+  padding: 14px;
+  background-color: rgba(0, 0, 0, 1);
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+}
+
+@media (max-width: 920px) {
+  .form__submit {
+    margin: 15px auto 25px;
+  }
+}
+
+.form__submit:hover {
+  background-color: rgba(0, 0, 0, .8);
+}
