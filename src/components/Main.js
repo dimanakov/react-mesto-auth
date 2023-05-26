@@ -1,4 +1,4 @@
-export default function Main({onEditProfile, onAddPlace, onEditAvatar}) {
+export default function Main({ onEditProfile, onAddPlace, onEditAvatar, userName, userDescription, userAvatar, children }) {
 
   return (
     <main>
@@ -6,7 +6,7 @@ export default function Main({onEditProfile, onAddPlace, onEditAvatar}) {
         aria-label="профиль пользователя">
         <div className="profile__cover">
           <img className="profile__avatar"
-            src="<%=require('./images/kusto.jpg')%>"
+            src={`${userAvatar}`}
             alt="фотография пользователя" />
           <button className="button profile__avatar-button"
             type="button"
@@ -15,13 +15,13 @@ export default function Main({onEditProfile, onAddPlace, onEditAvatar}) {
         </div>
         <div className="profile__info">
           <div className="profile__group">
-            <h1 className="heading profile__name">Жак-Ив Кусто</h1>
+            <h1 className="heading profile__name">{userName}</h1>
             <button className="button button_focus profile__edit-button"
               type="button"
               aria-label="редактировать профиль"
               onClick={onEditProfile}></button>
           </div>
-          <p className="text profile__profession">Исследователь океана</p>
+          <p className="text profile__profession">{userDescription}</p>
         </div>
         <button className="button button_focus profile__add-button"
           type="button"
@@ -32,6 +32,7 @@ export default function Main({onEditProfile, onAddPlace, onEditAvatar}) {
         aria-label="галерея посещённых мест]">
         <ul className="elements__gallery">
           {/* место для карточек */}
+          {children}
         </ul>
       </section>
     </main>

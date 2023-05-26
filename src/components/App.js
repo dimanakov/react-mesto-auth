@@ -5,12 +5,34 @@ import Main from './Main.js';
 import Footer from './Footer.js';
 import PopupWithForm from './PopupWithForm.js';
 import ImagePopup from './ImagePopup.js';
+import { api } from '../utils/Api.js';
+import Card from './Card.js';
 
-function App() {
+export default function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
-  const [isRemoveCardPopupOpen, setRemoveCardPopupOpen] = React.useState(false);
+  const [selectedCard, handleCardClick] = React.useState('')
+
+  const [userInfo, setUserInfo] = React.useState([]);
+  const [cards, setCardsData] = React.useState([]);
+
+  React.useEffect(() => {
+    function getUserData() {
+      Promise.all([
+        api.getUserInfo(),
+        api.getInitialCards()
+      ])
+        .then(([userData, initialCards]) => {
+          setUserInfo(userData);
+          setCardsData(initialCards);
+        })
+        .catch((err) => {             //попадаем сюда если один из промисов завершится ошибкой 
+          console.error(err);
+        });
+    }
+    getUserData();
+  }, [])
 
   function handleEditAvatarClick() {
     setEditAvatarPopupOpen(true)
@@ -24,28 +46,42 @@ function App() {
     setAddPlacePopupOpen(true)
   }
 
-  function handleRemovePlaceClick() {
-    setRemoveCardPopupOpen(true)
-  }
-
-
   function closeAllPopups() {
-    setAddPlacePopupOpen(false)
-    setEditProfilePopupOpen(false)
-    setEditAvatarPopupOpen(false)
-    setRemoveCardPopupOpen(false)
+    setAddPlacePopupOpen(false);
+    setEditProfilePopupOpen(false);
+    setEditAvatarPopupOpen(false);
+    handleCardClick('');
   }
 
   return (
     <div className="page">
+
       <Header />
+
       <Main
         onEditAvatar={handleEditAvatarClick}
         onEditProfile={handleEditProfileClick}
         onAddPlace={handleAddPlaceClick}
-        onRemovePlace={handleRemovePlaceClick}
+        userName={userInfo.name}
+        userDescription={userInfo.about}
+        userAvatar={userInfo.avatar}
+        children={
+          cards.map((card) => {
+            return (
+              <Card
+                key={card._id}
+                name={card.name}
+                link={card.link}
+                likes={card.likes.length}
+                onCardClick={handleCardClick}
+              />
+            )
+          })
+        }
       />
+
       <Footer />
+
       <PopupWithForm
         name='avatar'
         title='Обновить аватар'
@@ -68,6 +104,7 @@ function App() {
           </fieldset>
         }
       />
+
       <PopupWithForm
         name='profile'
         title='Редактировать профиль'
@@ -101,6 +138,7 @@ function App() {
           </fieldset>
         }
       />
+
       <PopupWithForm
         name='elements'
         title='Новое место'
@@ -136,55 +174,14 @@ function App() {
       <PopupWithForm
         name='remove-card'
         title='Вы уверены?'
-        isOpen={isRemoveCardPopupOpen}
         onClose={closeAllPopups}
         buttonText='Сохранить'
       />
 
       <ImagePopup
+        card={selectedCard}
         onClose={closeAllPopups}
       />
-
-
-      {/* 
-      popup увеличенная фотография --
-       <div className="popup popup_scale-image">
-        <div className="popup__image-container">
-          <figure className="scale-image">
-            <img className="scale-image__image"
-              src="#"
-              alt="#" />
-            <figcaption className="scale-image__figcaption"></figcaption>
-          </figure>
-          <button type="button"
-            className="button button_focus popup__close-button"
-            aria-label="закрыть"></button>
-        </div>
-      </div> 
-
-       template - добавить карточку
-
-      <template className="card-template">
-        <li className="elements__item">
-          <img className="elements__image"
-            src='#'
-            alt="#" />
-          <div className="elements__group">
-            <h2 className="heading elements__heading"></h2>
-            <div className="elements__like-group">
-              <button className="button elements__like-button"
-                type="button"
-                aria-label="отметить: нравится"></button>
-              <span className="elements__like-count">0</span>
-            </div>
-          </div>
-          <button className="button elements__remove-item"
-            type="button"
-            aria-label="удалить карточку"></button>
-        </li>
-      </template> */}
     </div>
   )
 }
-
-export default App;
