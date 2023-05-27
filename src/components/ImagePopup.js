@@ -7,7 +7,7 @@ export default function ImagePopup(props) {
         <figure className="scale-image">
           <img className="scale-image__image"
             src={props.card}
-            alt='#' 
+            alt='#'
             />
           <figcaption className="scale-image__figcaption"></figcaption>
         </figure>

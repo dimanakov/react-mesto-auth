@@ -108,4 +108,4 @@ const api = new Api({
   token: '5fe7123c-7279-49b2-81ff-c2ec486e8681'
 });
 
-export { api };
+export default api;

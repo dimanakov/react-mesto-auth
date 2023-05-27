@@ -5,7 +5,7 @@ import Main from './Main.js';
 import Footer from './Footer.js';
 import PopupWithForm from './PopupWithForm.js';
 import ImagePopup from './ImagePopup.js';
-import { api } from '../utils/Api.js';
+import api from '../utils/Api.js';
 import Card from './Card.js';
 
 export default function App() {
@@ -17,7 +17,26 @@ export default function App() {
   const [userInfo, setUserInfo] = React.useState([]);
   const [cards, setCardsData] = React.useState([]);
 
-  React.useEffect(() => {
+  function handleEditAvatarClick() {
+    setEditAvatarPopupOpen(true)
+  }
+
+  function handleEditProfileClick() {
+    setEditProfilePopupOpen(true)
+  }
+
+  function handleAddPlaceClick() {
+    setAddPlacePopupOpen(true)
+  }
+
+  function closeAllPopups() {   //универсальная функция закрытия попапов через крестик
+    setAddPlacePopupOpen(false);
+    setEditProfilePopupOpen(false);
+    setEditAvatarPopupOpen(false);
+    handleCardClick('');
+  }
+
+  React.useEffect(() => {   //запрос данных отправляется 2 раза из-за srtict-mode
     function getUserData() {
       Promise.all([
         api.getUserInfo(),
@@ -32,28 +51,11 @@ export default function App() {
         });
     }
     getUserData();
-  }, [])
+  }, []) // пустая зависимость для однократного вызова эффекта
 
-  function handleEditAvatarClick() {
-    setEditAvatarPopupOpen(true)
-  }
 
-  function handleEditProfileClick() {
-    setEditProfilePopupOpen(true)
-  }
 
-  function handleAddPlaceClick() {
-    setAddPlacePopupOpen(true)
-  }
-
-  function closeAllPopups() {
-    setAddPlacePopupOpen(false);
-    setEditProfilePopupOpen(false);
-    setEditAvatarPopupOpen(false);
-    handleCardClick('');
-  }
-
-  return (
+  return (    //визуальное содержимое компонента App вставляемое на главную страницу index
     <div className="page">
 
       <Header />
