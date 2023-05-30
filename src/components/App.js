@@ -12,9 +12,9 @@ export default function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
-  const [selectedCard, handleCardClick] = React.useState('')
+  const [selectedCard, handleCardClick] = React.useState({});
 
-  const [userInfo, setUserInfo] = React.useState([]);
+  const [userInfo, setUserInfo] = React.useState({});
   const [cards, setCardsData] = React.useState([]);
 
   function handleEditAvatarClick() {
@@ -33,7 +33,7 @@ export default function App() {
     setAddPlacePopupOpen(false);
     setEditProfilePopupOpen(false);
     setEditAvatarPopupOpen(false);
-    handleCardClick('');
+    handleCardClick({});
   }
 
   React.useEffect(() => {   //запрос данных отправляется 2 раза из-за srtict-mode
@@ -66,21 +66,16 @@ export default function App() {
         onAddPlace={handleAddPlaceClick}
         userName={userInfo.name}
         userDescription={userInfo.about}
-        userAvatar={userInfo.avatar}
-        children={
-          cards.map((card) => {
-            return (
-              <Card
-                key={card._id}
-                name={card.name}
-                link={card.link}
-                likes={card.likes.length}
-                onCardClick={handleCardClick}
-              />
-            )
-          })
-        }
-      />
+        userAvatar={userInfo.avatar}>
+        {cards.map((card) => {
+          return (
+            <Card
+              key={card._id}
+              card={card}
+              onCardClick={handleCardClick}
+            />)
+        })}
+      </Main>
 
       <Footer />
 
@@ -89,89 +84,83 @@ export default function App() {
         title='Обновить аватар'
         isOpen={isEditAvatarPopupOpen}
         onClose={closeAllPopups}
-        buttonText='Сохранить'
-        children={
-          <fieldset className="form__field form__field_profile-avatar">
-            <input className="form__input form__input_el_avatar"
-              id="avatar-input"
-              name="avatar"
-              aria-label="Аватар"
-              placeholder="Ссылка на изображение"
-              autoComplete="off"
-              type="url"
-              minLength="2"
-              maxLength="200"
-              required />
-            <span className="avatar-input-error form__input-error"></span>
-          </fieldset>
-        }
-      />
+        buttonText='Сохранить'>
+        {<fieldset className="form__field form__field_profile-avatar">
+          <input className="form__input form__input_el_avatar"
+            id="avatar-input"
+            name="avatar"
+            aria-label="Аватар"
+            placeholder="Ссылка на изображение"
+            autoComplete="off"
+            type="url"
+            minLength="2"
+            maxLength="200"
+            required />
+          <span className="avatar-input-error form__input-error"></span>
+        </fieldset>}
+      </PopupWithForm>
 
       <PopupWithForm
         name='profile'
         title='Редактировать профиль'
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
-        buttonText='Сохранить'
-        children={
-          <fieldset className="form__field form__field_profile-info">
-            <input className="form__input form__input_el_name"
-              id="name-input"
-              type="text"
-              name="name"
-              aria-label="Имя"
-              placeholder="Иван Иванов"
-              autoComplete="off"
-              minLength="2"
-              maxLength="40"
-              required />
-            <span className="name-input-error form__input-error"></span>
-            <input className="form__input form__input_el_profession"
-              id="profession-input"
-              type="text"
-              name="about"
-              aria-label="Профессия"
-              placeholder="Строитель кораблей"
-              autoComplete="off"
-              minLength="2"
-              maxLength="200"
-              required />
-            <span className="profession-input-error form__input-error"></span>
-          </fieldset>
-        }
-      />
+        buttonText='Сохранить'>
+        {<fieldset className="form__field form__field_profile-info">
+          <input className="form__input form__input_el_name"
+            id="name-input"
+            type="text"
+            name="name"
+            aria-label="Имя"
+            placeholder="Иван Иванов"
+            autoComplete="off"
+            minLength="2"
+            maxLength="40"
+            required />
+          <span className="name-input-error form__input-error"></span>
+          <input className="form__input form__input_el_profession"
+            id="profession-input"
+            type="text"
+            name="about"
+            aria-label="Профессия"
+            placeholder="Строитель кораблей"
+            autoComplete="off"
+            minLength="2"
+            maxLength="200"
+            required />
+          <span className="profession-input-error form__input-error"></span>
+        </fieldset>}
+      </PopupWithForm>
 
       <PopupWithForm
         name='elements'
         title='Новое место'
         isOpen={isAddPlacePopupOpen}
         onClose={closeAllPopups}
-        buttonText='Сохранить'
-        children={
-          <fieldset className="form__field form__field_profile-info">
-            <input className="form__input form__input_el_heading"
-              id="heading-input"
-              type="text"
-              name="name"
-              aria-label="Название"
-              placeholder="Название"
-              autoComplete="off"
-              minLength="2"
-              maxLength="30"
-              required />
-            <span className="heading-input-error form__input-error"></span>
-            <input className="form__input form__input_el_image"
-              id="image-input"
-              type="url"
-              name="link"
-              aria-label="Ссылка на картинку"
-              placeholder="Ссылка на картинку"
-              autoComplete="off"
-              required />
-            <span className="image-input-error form__input-error"></span>
-          </fieldset>
-        }
-      />
+        buttonText='Сохранить'>
+        {<fieldset className="form__field form__field_profile-info">
+          <input className="form__input form__input_el_heading"
+            id="heading-input"
+            type="text"
+            name="name"
+            aria-label="Название"
+            placeholder="Название"
+            autoComplete="off"
+            minLength="2"
+            maxLength="30"
+            required />
+          <span className="heading-input-error form__input-error"></span>
+          <input className="form__input form__input_el_image"
+            id="image-input"
+            type="url"
+            name="link"
+            aria-label="Ссылка на картинку"
+            placeholder="Ссылка на картинку"
+            autoComplete="off"
+            required />
+          <span className="image-input-error form__input-error"></span>
+        </fieldset>}
+      </PopupWithForm>
 
       <PopupWithForm
         name='remove-card'
