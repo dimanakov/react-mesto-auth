@@ -69,6 +69,10 @@ class Api {
     return this._getResponseData(res);
   }
 
+  changeLikeCardStatus(card, isLiked){
+    return isLiked ? this.addLike(card) : this.removeLike(card)
+  }
+
   async addLike(data) {
     const res = await fetch(`${this._address}/cards/${data._id}/likes`, {
       method: 'PUT',
