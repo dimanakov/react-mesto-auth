@@ -9,6 +9,9 @@ import api from '../utils/Api.js';
 import Card from './Card.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
+
+
 
 export default function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
@@ -38,8 +41,15 @@ export default function App() {
     handleCardClick({});
   }
 
-  function handleUpdateUser(data){
+  function handleUpdateUser(data) {
     api.setUserInfo(data).then((userInfo) => {
+      setCurrentUser(userInfo);
+      closeAllPopups();
+    })
+  }
+
+  function handleUpdateAvatar(link) {
+    api.setUserAvatar(link).then((userInfo) => {
       setCurrentUser(userInfo);
       closeAllPopups();
     })
@@ -49,17 +59,25 @@ export default function App() {
     // Снова проверяем, есть ли уже лайк на этой карточке
     const isLiked = card.likes.some(i => i._id === currentUser._id);
     // Отправляем запрос в API и получаем обновлённые данные карточки
-    api.changeLikeCardStatus(card, !isLiked).then((newCard) => {
-      setCardsData((cards) => cards.map((c) => c._id === card._id ? newCard : c));
-    });
+    api.changeLikeCardStatus(card, !isLiked)
+      .then((newCard) => {
+        setCardsData((cards) => cards.map((c) => c._id === card._id ? newCard : c));
+      })
+      .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
+        console.error(err);
+      });
   }
 
   function handleCardDelete(card) {
-    api.removeCard(card).then(() => {
-      setCardsData((cards) =>
-        cards.filter((item) => { return item._id !== card._id })
-      )
-    })
+    api.removeCard(card)
+      .then(() => {
+        setCardsData((cards) =>
+          cards.filter((item) => { return item._id !== card._id })
+        )
+      })
+      .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
+        console.error(err);
+      });
   }
 
   React.useEffect(() => {   //запрос данных отправляется 2 раза из-за srtict-mode
@@ -104,38 +122,12 @@ export default function App() {
 
         <Footer />
 
-        <PopupWithForm
-          name='avatar'
-          title='Обновить аватар'
+        <EditAvatarPopup
+          onUpdateAvatar={handleUpdateAvatar}
           isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          buttonText='Сохранить'>
-          {<fieldset className="form__field form__field_profile-avatar">
-            <input className="form__input form__input_el_avatar"
-              id="avatar-input"
-              name="avatar"
-              aria-label="Аватар"
-              placeholder="Ссылка на изображение"
-              autoComplete="off"
-              type="url"
-              minLength="2"
-              maxLength="200"
-              required />
-            <span className="avatar-input-error form__input-error"></span>
-          </fieldset>}
-        </PopupWithForm>
+          onClose={closeAllPopups} />
 
-        {/* <PopupWithForm
-          name='profile'
-          title='Редактировать профиль'
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          buttonText='Сохранить'>
 
-          <EditProfilePopup
-            isOpen={isEditProfilePopupOpen}
-            onClose={closeAllPopups} />
-        </PopupWithForm> */}
         <EditProfilePopup
           onUpdateUser={handleUpdateUser}
           isOpen={isEditProfilePopupOpen}
