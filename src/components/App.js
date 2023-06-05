@@ -49,7 +49,7 @@ export default function App() {
 
   function handleCardDelete(card){
     api.removeCard(card).then(() => {setCardsData((cards) => 
-    cards.filter()
+    cards.filter((item) => {return item._id !== card._id})
     )})
   }
 
