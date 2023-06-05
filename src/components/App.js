@@ -8,7 +8,7 @@ import ImagePopup from './ImagePopup.js';
 import api from '../utils/Api.js';
 import Card from './Card.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
-
+import EditProfilePopup from './EditProfilePopup';
 
 export default function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
@@ -38,6 +38,13 @@ export default function App() {
     handleCardClick({});
   }
 
+  function handleUpdateUser(data){
+    api.setUserInfo(data).then((userInfo) => {
+      setCurrentUser(userInfo);
+      closeAllPopups();
+    })
+  }
+
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
     const isLiked = card.likes.some(i => i._id === currentUser._id);
@@ -45,12 +52,14 @@ export default function App() {
     api.changeLikeCardStatus(card, !isLiked).then((newCard) => {
       setCardsData((cards) => cards.map((c) => c._id === card._id ? newCard : c));
     });
-  } 
+  }
 
-  function handleCardDelete(card){
-    api.removeCard(card).then(() => {setCardsData((cards) => 
-    cards.filter((item) => {return item._id !== card._id})
-    )})
+  function handleCardDelete(card) {
+    api.removeCard(card).then(() => {
+      setCardsData((cards) =>
+        cards.filter((item) => { return item._id !== card._id })
+      )
+    })
   }
 
   React.useEffect(() => {   //запрос данных отправляется 2 раза из-за srtict-mode
@@ -73,8 +82,8 @@ export default function App() {
 
 
   return (    //визуальное содержимое компонента App вставляемое на главную страницу index
-    <div className="page">
-      <CurrentUserContext.Provider value={currentUser}>
+    <CurrentUserContext.Provider value={currentUser}>
+      <div className="page">
         <Header />
 
         <Main
@@ -116,37 +125,22 @@ export default function App() {
           </fieldset>}
         </PopupWithForm>
 
-        <PopupWithForm
+        {/* <PopupWithForm
           name='profile'
           title='Редактировать профиль'
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
           buttonText='Сохранить'>
-          {<fieldset className="form__field form__field_profile-info">
-            <input className="form__input form__input_el_name"
-              id="name-input"
-              type="text"
-              name="name"
-              aria-label="Имя"
-              placeholder="Иван Иванов"
-              autoComplete="off"
-              minLength="2"
-              maxLength="40"
-              required />
-            <span className="name-input-error form__input-error"></span>
-            <input className="form__input form__input_el_profession"
-              id="profession-input"
-              type="text"
-              name="about"
-              aria-label="Профессия"
-              placeholder="Строитель кораблей"
-              autoComplete="off"
-              minLength="2"
-              maxLength="200"
-              required />
-            <span className="profession-input-error form__input-error"></span>
-          </fieldset>}
-        </PopupWithForm>
+
+          <EditProfilePopup
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups} />
+        </PopupWithForm> */}
+        <EditProfilePopup
+          onUpdateUser={handleUpdateUser}
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups} />
+
 
         <PopupWithForm
           name='elements'
@@ -189,7 +183,7 @@ export default function App() {
           card={selectedCard}
           onClose={closeAllPopups}
         />
-      </CurrentUserContext.Provider>
-    </div >
+      </div >
+    </CurrentUserContext.Provider>
   )
 }
