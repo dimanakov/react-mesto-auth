@@ -10,6 +10,7 @@ import Card from './Card.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
 
 
 
@@ -53,6 +54,17 @@ export default function App() {
       setCurrentUser(userInfo);
       closeAllPopups();
     })
+  }
+
+  function handleAddPlaceSubmit(data) {
+    api.addCard(data)
+      .then((card) => {
+        setCardsData([card, ...cards]);
+        closeAllPopups();
+      })
+      .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
+        console.error(err);
+      });
   }
 
   function handleCardLike(card) {
@@ -133,36 +145,10 @@ export default function App() {
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups} />
 
-
-        <PopupWithForm
-          name='elements'
-          title='Новое место'
+        <AddPlacePopup
+          onAddPlace={handleAddPlaceSubmit}
           isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          buttonText='Сохранить'>
-          {<fieldset className="form__field form__field_profile-info">
-            <input className="form__input form__input_el_heading"
-              id="heading-input"
-              type="text"
-              name="name"
-              aria-label="Название"
-              placeholder="Название"
-              autoComplete="off"
-              minLength="2"
-              maxLength="30"
-              required />
-            <span className="heading-input-error form__input-error"></span>
-            <input className="form__input form__input_el_image"
-              id="image-input"
-              type="url"
-              name="link"
-              aria-label="Ссылка на картинку"
-              placeholder="Ссылка на картинку"
-              autoComplete="off"
-              required />
-            <span className="image-input-error form__input-error"></span>
-          </fieldset>}
-        </PopupWithForm>
+          onClose={closeAllPopups} />
 
         <PopupWithForm
           name='remove-card'
