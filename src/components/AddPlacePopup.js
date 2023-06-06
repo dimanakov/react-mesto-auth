@@ -12,9 +12,10 @@ const [link, setLink] = useState('');
     setName(e.target.value);
   }
 
-// e - event - объект на котором происходит действие, e.target - действие, value - значение поля
+// e - event - объект, e.target - свойство объекта на котором происходит событие, value - значение текстового объекта
 // handleChangeLink - прописан в атрибуте onChange инпута link, срабатывает каждый раз при изменении value
-// 
+// События клавиатуры генерируются только в <input> и <textarea>
+
   function handleChangeLink(e) {
     setLink(e.target.value);
   }

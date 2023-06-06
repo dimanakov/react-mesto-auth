@@ -47,7 +47,7 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
       onSubmit={handleSubmit}>
       <fieldset className="form__field form__field_profile-info">
         <input className="form__input form__input_el_name"
-          value={name}
+          value={name || ''}
           onChange={handleChangeName}
           id="name-input"
           type="text"
@@ -60,7 +60,7 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
           required />
         <span className="name-input-error form__input-error"></span>
         <input className="form__input form__input_el_profession"
-          value={description}
+          value={description || ''}
           onChange={handleChangeDescription}
           id="profession-input"
           type="text"

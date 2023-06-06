@@ -1,28 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../index.css';
 import Header from './Header.js';
 import Main from './Main.js';
-import Footer from './Footer.js';
-import PopupWithForm from './PopupWithForm.js';
-import ImagePopup from './ImagePopup.js';
-import api from '../utils/Api.js';
 import Card from './Card.js';
+import Footer from './Footer.js';
+import api from '../utils/Api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+import ConfirmPopup from './ConfirmPopup';
+import ImagePopup from './ImagePopup.js';
 
 
 
 export default function App() {
-  const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
-  const [selectedCard, handleCardClick] = React.useState({});
+  const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
+  const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false);
+  const [selectedCard, handleCardClick] = useState({});
 
-  const [currentUser, setCurrentUser] = React.useState({});
-  const [cards, setCardsData] = React.useState([]);
+  const [currentUser, setCurrentUser] = useState({});
+  const [cards, setCardsData] = useState([]);
+  const [element, setElement] = useState({}); // стейт для карточки на удаление
 
+  
   function handleEditAvatarClick() {
     setEditAvatarPopupOpen(true)
   }
@@ -35,25 +38,47 @@ export default function App() {
     setAddPlacePopupOpen(true)
   }
 
+// изначально планировал сделать универсальный popup Confirm, 
+// но не решил проблему с передачей функции удаления через атрибут.
+// Пришлось сделать попап только под удаление карточки
+  function handleRemovePlaceConfirm() {
+    handleCardDelete(element);
+  }
+
+// Используется в <Card onRemoveCard={handleRemovePlaceClick}>
+  function handleRemovePlaceClick(card) {
+    setConfirmPopupOpen(true);
+    setElement(card);
+  }
+
   function closeAllPopups() {   //универсальная функция закрытия попапов через крестик
     setAddPlacePopupOpen(false);
     setEditProfilePopupOpen(false);
     setEditAvatarPopupOpen(false);
+    setConfirmPopupOpen(false);
     handleCardClick({});
   }
 
   function handleUpdateUser(data) {
-    api.setUserInfo(data).then((userInfo) => {
-      setCurrentUser(userInfo);
-      closeAllPopups();
-    })
+    api.setUserInfo(data)
+      .then((userInfo) => {
+        setCurrentUser(userInfo);
+        closeAllPopups();
+      })
+      .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
+        console.error(err);
+      });
   }
 
   function handleUpdateAvatar(link) {
-    api.setUserAvatar(link).then((userInfo) => {
-      setCurrentUser(userInfo);
-      closeAllPopups();
-    })
+    api.setUserAvatar(link)
+      .then((userInfo) => {
+        setCurrentUser(userInfo);
+        closeAllPopups();
+      })
+      .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
+        console.error(err);
+      });
   }
 
   function handleAddPlaceSubmit(data) {
@@ -86,13 +111,14 @@ export default function App() {
         setCardsData((cards) =>
           cards.filter((item) => { return item._id !== card._id })
         )
+        closeAllPopups();
       })
       .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
         console.error(err);
       });
   }
 
-  React.useEffect(() => {   //запрос данных отправляется 2 раза из-за srtict-mode
+  useEffect(() => {   //запрос данных отправляется 2 раза из-за srtict-mode
     function getUserData() {
       Promise.all([
         api.getUserInfo(),
@@ -127,7 +153,7 @@ export default function App() {
                 card={card}
                 onCardClick={handleCardClick}
                 onCardLike={handleCardLike}
-                onCardDelete={handleCardDelete}
+                onRemoveCard={handleRemovePlaceClick}
               />)
           })}
         </Main>
@@ -145,17 +171,18 @@ export default function App() {
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups} />
 
+
         <AddPlacePopup
           onAddPlace={handleAddPlaceSubmit}
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups} />
 
-        <PopupWithForm
-          name='remove-card'
-          title='Вы уверены?'
+
+        <ConfirmPopup
+          isOpen={isConfirmPopupOpen}
           onClose={closeAllPopups}
-          buttonText='Сохранить'
-        />
+          onConfirm={handleRemovePlaceConfirm} />
+
 
         <ImagePopup
           card={selectedCard}
