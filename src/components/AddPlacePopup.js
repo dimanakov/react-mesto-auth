@@ -29,6 +29,8 @@ function handleSubmit (e) {
     name,
     link
   });
+  setName('');
+  setLink('');
 }
 
 
