@@ -10,16 +10,22 @@ import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmPopup from './ConfirmPopup';
-import ImagePopup from './ImagePopup.js';
+import ImagePopup from './ImagePopup';
 
+// валидация форм
+// import FormValidator from './FormValidator';
+import { configValidatorForm, configProfile, configPopup } from '../utils/classNameConfig.js';
 
 
 export default function App() {
+
+
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
   const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false);
   const [selectedCard, handleCardClick] = useState({});
+
 
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCardsData] = useState([]);
@@ -38,7 +44,7 @@ export default function App() {
     setAddPlacePopupOpen(true)
   }
 
-// изначально планировал сделать универсальный popup Confirm, 
+// изначально планировал сделать универсальный popup Confirm,
 // но не решил проблему с передачей функции удаления через атрибут.
 // Пришлось сделать попап только под удаление карточки
   function handleRemovePlaceConfirm() {
@@ -58,6 +64,7 @@ export default function App() {
     setConfirmPopupOpen(false);
     handleCardClick({});
   }
+
 
   function handleUpdateUser(data) {
     api.setUserInfo(data)
@@ -134,8 +141,6 @@ export default function App() {
     }
     getUserData();
   }, []) // пустая зависимость для однократного вызова эффекта
-
-
 
   return (    //визуальное содержимое компонента App вставляемое на главную страницу index
     <CurrentUserContext.Provider value={currentUser}>

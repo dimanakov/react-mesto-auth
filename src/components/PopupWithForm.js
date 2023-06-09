@@ -1,4 +1,4 @@
-export default function PopupWithForm({ name, title, buttonText, onClose, isOpen, onSubmit, children}) {
+export default function PopupWithForm({ name, title, buttonText, onClose, isOpen, onSubmit, isValid, children}) {
   return (
     <div className={`popup popup_form popup_${name} ${isOpen ? 'popup_opened' : ''}`}>
       <div className="popup__container">
@@ -9,7 +9,9 @@ export default function PopupWithForm({ name, title, buttonText, onClose, isOpen
           <h2 className="heading form__heading form__heading_type_input">{title}</h2>
           {children}
           <button type="submit"
-            className="button form__submit text">{buttonText}</button>
+            className={`button form__submit text ${isValid ? '' : 'form__submit_inactive'}`}
+            disabled={!isValid}
+            >{buttonText}</button>
         </form>
         <button type="button"
           className="button button_focus popup__close-button"
