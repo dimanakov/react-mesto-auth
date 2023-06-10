@@ -2,30 +2,36 @@ import React, { useState, useEffect } from 'react';
 import '../index.css';
 import Header from './Header.js';
 import Main from './Main.js';
-import Card from './Card.js';
 import Footer from './Footer.js';
 import api from '../utils/Api.js';
-import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { AppContext } from '../contexts/AppContext'
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmPopup from './ConfirmPopup';
-import ImagePopup from './ImagePopup.js';
+import ImagePopup from './ImagePopup';
 
+// валидация форм
+// import FormValidator from './FormValidator';
+// import { configValidatorForm, configProfile, configPopup } from '../utils/classNameConfig.js';
 
 
 export default function App() {
+
+
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
   const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false);
   const [selectedCard, handleCardClick] = useState({});
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCardsData] = useState([]);
   const [element, setElement] = useState({}); // стейт для карточки на удаление
 
-  
+
   function handleEditAvatarClick() {
     setEditAvatarPopupOpen(true)
   }
@@ -38,14 +44,14 @@ export default function App() {
     setAddPlacePopupOpen(true)
   }
 
-// изначально планировал сделать универсальный popup Confirm, 
-// но не решил проблему с передачей функции удаления через атрибут.
-// Пришлось сделать попап только под удаление карточки
+  // изначально планировал сделать универсальный popup Confirm,
+  // но не решил проблему с передачей функции удаления через атрибут.
+  // Пришлось сделать попап только под удаление карточки
   function handleRemovePlaceConfirm() {
     handleCardDelete(element);
   }
 
-// Используется в <Card onRemoveCard={handleRemovePlaceClick}>
+  // Используется в <Card onRemoveCard={handleRemovePlaceClick}>
   function handleRemovePlaceClick(card) {
     setConfirmPopupOpen(true);
     setElement(card);
@@ -60,6 +66,7 @@ export default function App() {
   }
 
   function handleUpdateUser(data) {
+    setIsLoading(true);
     api.setUserInfo(data)
       .then((userInfo) => {
         setCurrentUser(userInfo);
@@ -67,10 +74,12 @@ export default function App() {
       })
       .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
         console.error(err);
-      });
+      })
+      .finally(() => { setIsLoading(false) });
   }
 
   function handleUpdateAvatar(link) {
+    setIsLoading(true);
     api.setUserAvatar(link)
       .then((userInfo) => {
         setCurrentUser(userInfo);
@@ -78,10 +87,12 @@ export default function App() {
       })
       .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
         console.error(err);
-      });
+      })
+      .finally(() => { setIsLoading(false) });
   }
 
   function handleAddPlaceSubmit(data) {
+    setIsLoading(true);
     api.addCard(data)
       .then((card) => {
         setCardsData([card, ...cards]);
@@ -89,7 +100,8 @@ export default function App() {
       })
       .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
         console.error(err);
-      });
+      })
+      .finally(() => { setIsLoading(false) });
   }
 
   function handleCardLike(card) {
@@ -106,6 +118,7 @@ export default function App() {
   }
 
   function handleCardDelete(card) {
+    setIsLoading(true);
     api.removeCard(card)
       .then(() => {
         setCardsData((cards) =>
@@ -115,7 +128,8 @@ export default function App() {
       })
       .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
         console.error(err);
-      });
+      })
+      .finally(() => { setIsLoading(false) });
   }
 
   useEffect(() => {   //запрос данных отправляется 2 раза из-за srtict-mode
@@ -135,60 +149,43 @@ export default function App() {
     getUserData();
   }, []) // пустая зависимость для однократного вызова эффекта
 
-
-
   return (    //визуальное содержимое компонента App вставляемое на главную страницу index
-    <CurrentUserContext.Provider value={currentUser}>
-      <div className="page">
-        <Header />
-
-        <Main
-          onEditAvatar={handleEditAvatarClick}
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}>
-          {cards.map((card) => {
-            return (
-              <Card
-                key={card._id}
-                card={card}
-                onCardClick={handleCardClick}
-                onCardLike={handleCardLike}
-                onRemoveCard={handleRemovePlaceClick}
-              />)
-          })}
-        </Main>
-
-        <Footer />
-
-        <EditAvatarPopup
-          onUpdateAvatar={handleUpdateAvatar}
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups} />
-
-
-        <EditProfilePopup
-          onUpdateUser={handleUpdateUser}
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups} />
-
-
-        <AddPlacePopup
-          onAddPlace={handleAddPlaceSubmit}
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups} />
-
-
-        <ConfirmPopup
-          isOpen={isConfirmPopupOpen}
-          onClose={closeAllPopups}
-          onConfirm={handleRemovePlaceConfirm} />
-
-
-        <ImagePopup
-          card={selectedCard}
-          onClose={closeAllPopups}
-        />
-      </div >
-    </CurrentUserContext.Provider>
+    <AppContext.Provider value={{ isLoading, closeAllPopups }}>
+      <CurrentUserContext.Provider value={currentUser}>
+        <div className="page">
+          <Header />
+          <Main
+            onEditAvatar={handleEditAvatarClick}
+            onEditProfile={handleEditProfileClick}
+            onAddPlace={handleAddPlaceClick}
+            onRemoveCard={handleRemovePlaceClick}
+            onCardClick={handleCardClick}
+            onCardLike={handleCardLike}
+            cards={cards}>
+          </Main>
+          <Footer />
+          <EditAvatarPopup
+            onUpdateAvatar={handleUpdateAvatar}
+            isOpen={isEditAvatarPopupOpen}
+            onClose={closeAllPopups} />
+          <EditProfilePopup
+            onUpdateUser={handleUpdateUser}
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups} />
+          <AddPlacePopup
+            onAddPlace={handleAddPlaceSubmit}
+            isOpen={isAddPlacePopupOpen}
+            onClose={closeAllPopups} />
+          <ConfirmPopup
+            isOpen={isConfirmPopupOpen}
+            onClose={closeAllPopups}
+            onConfirm={handleRemovePlaceConfirm} />
+          <ImagePopup
+            card={selectedCard}
+            onClose={closeAllPopups}
+          />
+        </div >
+      </CurrentUserContext.Provider>
+    </AppContext.Provider>
   )
 }

@@ -1,30 +1,33 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useContext } from 'react';
 import PopupWithForm from "./PopupWithForm";
+import { AppContext } from '../contexts/AppContext';
 
 
-export default function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
+export default function EditAvatarPopup({ isOpen, onUpdateAvatar }) {
 
   const avatarRef = useRef();
   const [isValid, checkValidity] = useState(false);
   const [isErrorActive, setErrorActivity] = useState(false);
-  const [message, setMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const isLoading = useContext(AppContext);
+
 
   function handleSubmit(e) {
     e.preventDefault();
     onUpdateAvatar({
       avatar: avatarRef.current.value /* Значение инпута, полученное с помощью рефа */
     });
-    avatarRef.current.value = '';
   }
 
   function handleValue() {
     checkValidity(avatarRef.current.validity.valid);
-    setMessage(avatarRef.current.validationMessage);
+    setErrorMessage(avatarRef.current.validationMessage);
     (isValid ? setErrorActivity(false) : setErrorActivity(true))
   };
 
   useEffect(() => {
-    setMessage('');
+    setErrorMessage('');
+    avatarRef.current.value = '';
   }, [isOpen])
 
 
@@ -33,8 +36,7 @@ export default function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
       name='avatar'
       title='Обновить аватар'
       isOpen={isOpen}
-      onClose={onClose}
-      buttonText='Сохранить'
+      buttonText={`${isLoading ? 'Сохранение...' : 'Сохранить'}`}
       onSubmit={handleSubmit}
       isValid={isValid}
     >
@@ -51,7 +53,7 @@ export default function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
           minLength="2"
           maxLength="200"
           required />
-        <span className={`avatar-input-error form__input-error ${isErrorActive ? 'form__input-error_active' : ''}`}>{message}</span>
+        <span className={`avatar-input-error form__input-error ${isErrorActive ? 'form__input-error_active' : ''}`}>{errorMessage}</span>
       </fieldset>}
     </PopupWithForm>
   )

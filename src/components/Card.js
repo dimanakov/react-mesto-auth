@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 
-export default function Card({ card, onCardClick, onCardLike, onCardDelete, onRemoveCard }) {
+export default function Card({ card, onCardClick, onCardLike, onRemoveCard }) {
 
   const currentUser = useContext(CurrentUserContext);
   // Определяем, являемся ли мы владельцем текущей карточки
@@ -14,16 +14,12 @@ export default function Card({ card, onCardClick, onCardLike, onCardDelete, onRe
   );
 
   function handleClick() {
-    onCardClick({ link: card.link });
+    onCardClick(card);
   }
 
 function handleRemoveCard(){
   onRemoveCard(card)
 }
-
-  // function handleDeleteClick() {
-  //   onCardDelete(card);
-  // }
 
 function handleLikeClick(){
   onCardLike(card);
@@ -51,7 +47,6 @@ function handleLikeClick(){
         type="button"
         aria-label="удалить карточку"
         onClick={handleRemoveCard}
-        // onClick={handleDeleteClick}
        />}
     </li>
   )

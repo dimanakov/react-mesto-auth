@@ -1,8 +1,11 @@
+import { useContext } from "react";
 import PopupWithForm from "./PopupWithForm";
+import { AppContext } from '../contexts/AppContext';
 
 
-export default function ConfirmPopup({ isOpen, onClose, onConfirm }) {
+export default function ConfirmPopup({ isOpen, onConfirm }) {
 
+  const isLoading = useContext(AppContext);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -11,12 +14,12 @@ export default function ConfirmPopup({ isOpen, onClose, onConfirm }) {
 
   return (
     <PopupWithForm
+      isValid={true}
       onSubmit={handleSubmit}
       isOpen={isOpen}
       name='remove-card'
       title='Вы уверены?'
-      onClose={onClose}
-      buttonText='Сохранить'
+      buttonText={`${isLoading ? 'Удаление...' : 'Удалить'}`}
     />
   )
 }

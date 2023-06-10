@@ -1,51 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import PopupWithForm from "./PopupWithForm";
+import useFormAndValidation from '../hooks/useFormAndValidation';
+import { AppContext } from '../contexts/AppContext';
 
-export default function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
-  
-// создаём стейты для названия карточки и ссылки на картинку
-const [name, setName] = useState('');
-const [link, setLink] = useState('');
+export default function AddPlacePopup({ isOpen, onAddPlace }) {
 
+  const { values, handleChange, errors, isValid, resetForm } = useFormAndValidation({});
+  const isLoading = useContext(AppContext);
 
-  function handleChangeName(e) {
-    setName(e.target.value);
+  // действия при сабмите
+  function handleSubmit(e) {
+    // предотвращаем действие сабмита по учолчанию
+    e.preventDefault();
+    // передаём данные новой карточки наверх
+    onAddPlace(
+      values
+    );
   }
 
-// e - event - объект, e.target - свойство объекта на котором происходит событие, value - значение текстового объекта
-// handleChangeLink - прописан в атрибуте onChange инпута link, срабатывает каждый раз при изменении value
-// События клавиатуры генерируются только в <input> и <textarea>
-
-  function handleChangeLink(e) {
-    setLink(e.target.value);
-  }
-
-// действия при сабмите
-function handleSubmit (e) {
-// предотвращаем действие сабмита по учолчанию
-  e.preventDefault();
-// передаём данные новой карточки наверх
-  onAddPlace({
-    name,
-    link
-  });
-  setName('');
-  setLink('');
-}
-
+  useEffect(() => {
+    resetForm();
+  }, [isOpen, resetForm]);
 
   return (
     <PopupWithForm
       name='elements'
       title='Новое место'
       isOpen={isOpen}
-      onClose={onClose}
-      buttonText='Сохранить'
-      onSubmit={handleSubmit}>
+      buttonText={`${isLoading ? 'Сохранение...' : 'Сохранить'}`}
+      onSubmit={handleSubmit}
+      isValid={isValid}>
       {<fieldset className="form__field form__field_profile-info">
         <input className="form__input form__input_el_heading"
-          value={name}
-          onChange={handleChangeName}
+          value={values.name || ''}
+          onChange={handleChange}
           id="heading-input"
           type="text"
           name="name"
@@ -55,10 +43,10 @@ function handleSubmit (e) {
           minLength="2"
           maxLength="30"
           required />
-        <span className="heading-input-error form__input-error"></span>
+        <span className={`heading-input-error form__input-error ${errors.name ? 'form__input-error_active' : ''}`}>{errors.name}</span>
         <input className="form__input form__input_el_image"
-          value={link}
-          onChange={handleChangeLink}
+          value={values.link || ''}
+          onChange={handleChange}
           id="image-input"
           type="url"
           name="link"
@@ -66,7 +54,7 @@ function handleSubmit (e) {
           placeholder="Ссылка на картинку"
           autoComplete="off"
           required />
-        <span className="image-input-error form__input-error"></span>
+        <span className={`image-input-error form__input-error ${errors.link ? 'form__input-error_active' : ''}`}>{errors.link}</span>
       </fieldset>}
     </PopupWithForm>
   )

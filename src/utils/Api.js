@@ -1,7 +1,7 @@
 class Api {
-  constructor({baseUrl, token}) {
+  constructor({baseUrl, headers}) {
     this._address = baseUrl;
-    this._authorization = token;
+    this._headers = headers;
   }
 
   _getResponseData(res) {
@@ -13,14 +13,14 @@ class Api {
 
   async getUserInfo() {
     const res = await fetch(`${this._address}/users/me`, {
-      headers: { authorization: this._authorization }
+      headers: this._headers
     });
     return this._getResponseData(res);
   }
 
   async getInitialCards() {
     const res = await fetch(`${this._address}/cards`, {
-      headers: { authorization: this._authorization }
+      headers: this._headers
     });
     return this._getResponseData(res);
   }
@@ -28,10 +28,7 @@ class Api {
   async setUserInfo(data) {
     const res = await fetch(`${this._address}/users/me`, {
       method: 'PATCH',
-      headers: {
-        authorization: this._authorization,
-        'Content-Type': 'application/json'
-      },
+      headers: this._headers,
       body: JSON.stringify({
         name: data.name,
         about: data.about
@@ -43,10 +40,7 @@ class Api {
   async setUserAvatar(link) {
     const res = await fetch(`${this._address}/users/me/avatar`, {
       method: 'PATCH',
-      headers: {
-        authorization: this._authorization,
-        'Content-Type': 'application/json'
-      },
+      headers: this._headers,
       body: JSON.stringify({
         avatar: link.avatar
       })
@@ -57,10 +51,7 @@ class Api {
   async addCard(data) {
     const res = await fetch(`${this._address}/cards`, {
       method: 'POST',
-      headers: {
-        authorization: this._authorization,
-        'Content-Type': 'application/json'
-      },
+      headers: this._headers,
       body: JSON.stringify({
         name: data.name,
         link: data.link
@@ -76,10 +67,7 @@ class Api {
   async addLike(data) {
     const res = await fetch(`${this._address}/cards/${data._id}/likes`, {
       method: 'PUT',
-      headers: {
-        authorization: this._authorization,
-        'Content-Type': 'application/json'
-      }
+      headers: this._headers
     });
     return this._getResponseData(res);
   }
@@ -87,10 +75,7 @@ class Api {
   async removeLike(data) {
     const res = await fetch(`${this._address}/cards/${data._id}/likes`, {
       method: 'DELETE',
-      headers: {
-        authorization: this._authorization,
-        'Content-Type': 'application/json'
-      }
+      headers: this._headers
     });
     return this._getResponseData(res);
   }
@@ -98,10 +83,7 @@ class Api {
   async removeCard(data) {
     const res = await fetch(`${this._address}/cards/${data._id}`, {
       method: 'DELETE',
-      headers: {
-        authorization: this._authorization,
-        'Content-Type': 'application/json'
-      }
+      headers: this._headers
     });
     return this._getResponseData(res);
   }
@@ -109,7 +91,10 @@ class Api {
 
 const api = new Api({
   baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-65',
-  token: '5fe7123c-7279-49b2-81ff-c2ec486e8681'
+  headers: {
+    authorization: '5fe7123c-7279-49b2-81ff-c2ec486e8681',
+    'Content-Type': 'application/json'
+  },
 });
 
 export default api;
