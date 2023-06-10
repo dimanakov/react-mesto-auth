@@ -1,7 +1,8 @@
 import React, {useContext} from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
+import Card from './Card.js';
 
-export default function Main({ onEditAvatar, onEditProfile, onAddPlace, children}) {
+export default function Main({ onEditAvatar, onEditProfile, onAddPlace, cards, onCardClick, onCardLike, onRemoveCard }) {
 
   const currentUser = useContext(CurrentUserContext);
   
@@ -37,7 +38,16 @@ export default function Main({ onEditAvatar, onEditProfile, onAddPlace, children
         aria-label="галерея посещённых мест]">
         <ul className="elements__gallery">
           {/* место для карточек */}
-          {children}
+          {cards.map((card) => {
+            return (
+              <Card
+                key={card._id}
+                card={card}
+                onCardClick={onCardClick}
+                onCardLike={onCardLike}
+                onRemoveCard={onRemoveCard}
+              />)
+          })}
         </ul>
       </section>
     </main>
