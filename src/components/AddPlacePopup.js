@@ -6,7 +6,7 @@ import { AppContext } from '../contexts/AppContext';
 export default function AddPlacePopup({ isOpen, onAddPlace }) {
 
   const { values, handleChange, errors, isValid, resetForm } = useFormAndValidation({});
-  const isLoading = useContext(AppContext);
+  const { isLoading } = useContext(AppContext);
 
   // действия при сабмите
   function handleSubmit(e) {

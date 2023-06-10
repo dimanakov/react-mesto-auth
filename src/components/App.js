@@ -25,7 +25,7 @@ export default function App() {
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
   const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false);
   const [selectedCard, handleCardClick] = useState({});
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCardsData] = useState([]);
