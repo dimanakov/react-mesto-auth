@@ -5,7 +5,7 @@ import { AppContext } from '../contexts/AppContext';
 
 export default function ConfirmPopup({ isOpen, onConfirm }) {
 
-  const isLoading = useContext(AppContext);
+  const { isLoading } = useContext(AppContext);
 
   function handleSubmit(e) {
     e.preventDefault();

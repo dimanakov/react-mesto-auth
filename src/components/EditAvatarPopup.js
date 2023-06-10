@@ -9,7 +9,7 @@ export default function EditAvatarPopup({ isOpen, onUpdateAvatar }) {
   const [isValid, checkValidity] = useState(false);
   const [isErrorActive, setErrorActivity] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const isLoading = useContext(AppContext);
+  const { isLoading } = useContext(AppContext);
 
 
   function handleSubmit(e) {
@@ -38,8 +38,7 @@ export default function EditAvatarPopup({ isOpen, onUpdateAvatar }) {
       isOpen={isOpen}
       buttonText={`${isLoading ? 'Сохранение...' : 'Сохранить'}`}
       onSubmit={handleSubmit}
-      isValid={isValid}
-    >
+      isValid={isValid}>
       {<fieldset className="form__field form__field_profile-avatar">
         <input className="form__input form__input_el_avatar"
           onChange={handleValue}

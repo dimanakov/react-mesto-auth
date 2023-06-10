@@ -7,6 +7,7 @@ export default function ImagePopup({ card }) {
 
   const { closeAllPopups } = useContext(AppContext);
   usePopupClose(card?.link, closeAllPopups);
+  
   return (
     <div className={`popup popup_scale-image ${card.link ? 'popup_opened' : ''}`}>
       <div className="popup__image-container">
