@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import '../index.css';
 import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
+import SignIn from './SignIn';
+import SignUp from './SignUp';
 import api from '../utils/Api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { AppContext } from '../contexts/AppContext'
@@ -11,11 +14,6 @@ import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmPopup from './ConfirmPopup';
 import ImagePopup from './ImagePopup';
-
-// валидация форм
-// import FormValidator from './FormValidator';
-// import { configValidatorForm, configProfile, configPopup } from '../utils/classNameConfig.js';
-
 
 export default function App() {
 
@@ -154,15 +152,20 @@ export default function App() {
       <CurrentUserContext.Provider value={currentUser}>
         <div className="page">
           <Header />
-          <Main
-            onEditAvatar={handleEditAvatarClick}
-            onEditProfile={handleEditProfileClick}
-            onAddPlace={handleAddPlaceClick}
-            onRemoveCard={handleRemovePlaceClick}
-            onCardClick={handleCardClick}
-            onCardLike={handleCardLike}
-            cards={cards}>
-          </Main>
+          <Routes>
+            <Route path='/'
+              element={<Main
+                onEditAvatar={handleEditAvatarClick}
+                onEditProfile={handleEditProfileClick}
+                onAddPlace={handleAddPlaceClick}
+                onRemoveCard={handleRemovePlaceClick}
+                onCardClick={handleCardClick}
+                onCardLike={handleCardLike}
+                cards={cards} />} />
+            <Route path='/sign-in' element={<SignIn />} />
+            <Route path='/sign-up' element={<SignUp />} />
+            <Route path='*' element={<SignIn />} />
+          </Routes>
           <Footer />
           <EditAvatarPopup
             onUpdateAvatar={handleUpdateAvatar}
@@ -182,8 +185,7 @@ export default function App() {
             onConfirm={handleRemovePlaceConfirm} />
           <ImagePopup
             card={selectedCard}
-            onClose={closeAllPopups}
-          />
+            onClose={closeAllPopups} />
         </div >
       </CurrentUserContext.Provider>
     </AppContext.Provider>
