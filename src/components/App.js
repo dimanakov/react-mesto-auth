@@ -4,8 +4,7 @@ import '../index.css';
 import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
-import SignIn from './SignIn';
-import SignUp from './SignUp';
+import AuthForm from './AuthForm';
 import api from '../utils/Api.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { AppContext } from '../contexts/AppContext'
@@ -14,16 +13,19 @@ import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmPopup from './ConfirmPopup';
 import ImagePopup from './ImagePopup';
+import InfoTooltip from './InfoTooltip';
 
 export default function App() {
-
 
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
   const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false);
+  const [isAuthPopupOpen, setAuthPopupOpen] = useState(false);
   const [selectedCard, handleCardClick] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+const [isLoggedIn, setLoggedIn] = useState(false);
+const [authMessage, setAuthMessage] = useState('');
 
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCardsData] = useState([]);
@@ -40,6 +42,10 @@ export default function App() {
 
   function handleAddPlaceClick() {
     setAddPlacePopupOpen(true)
+  }
+
+  function handleAuthResult() {
+    setAuthPopupOpen(true);
   }
 
   // изначально планировал сделать универсальный popup Confirm,
@@ -60,6 +66,7 @@ export default function App() {
     setEditProfilePopupOpen(false);
     setEditAvatarPopupOpen(false);
     setConfirmPopupOpen(false);
+    setAuthPopupOpen(false);
     handleCardClick({});
   }
 
@@ -130,6 +137,16 @@ export default function App() {
       .finally(() => { setIsLoading(false) });
   }
 
+  function handleSubmitLogin() {
+    console.log('Working on Login ...')
+    handleAuthResult();
+  }
+
+  function handleSubmitRegister() {
+    console.log('Working on Register ...')
+    handleAuthResult();
+  }
+
   useEffect(() => {   //запрос данных отправляется 2 раза из-за srtict-mode
     function getUserData() {
       Promise.all([
@@ -162,30 +179,46 @@ export default function App() {
                 onCardClick={handleCardClick}
                 onCardLike={handleCardLike}
                 cards={cards} />} />
-            <Route path='/sign-in' element={<SignIn />} />
-            <Route path='/sign-up' element={<SignUp />} />
-            <Route path='*' element={<SignIn />} />
+
+            <Route path='/sign-in'
+              element={<AuthForm
+                name='login'
+                onSubmit={handleSubmitLogin}
+                title='Войти' 
+                buttonText='Войти'
+                buttonTextAction='Вход...'/>} />
+
+            <Route path='/sign-up'
+              element={<AuthForm
+                name='register'
+                onSubmit={handleSubmitRegister}
+                title='Регистрация' 
+                buttonText='Зарегистрироваться'
+                buttonTextAction='Регистрация...'/>} />
           </Routes>
           <Footer />
           <EditAvatarPopup
             onUpdateAvatar={handleUpdateAvatar}
             isOpen={isEditAvatarPopupOpen}
-            onClose={closeAllPopups} />
+             />
           <EditProfilePopup
             onUpdateUser={handleUpdateUser}
             isOpen={isEditProfilePopupOpen}
-            onClose={closeAllPopups} />
+            />
           <AddPlacePopup
             onAddPlace={handleAddPlaceSubmit}
             isOpen={isAddPlacePopupOpen}
-            onClose={closeAllPopups} />
+            />
           <ConfirmPopup
             isOpen={isConfirmPopupOpen}
-            onClose={closeAllPopups}
             onConfirm={handleRemovePlaceConfirm} />
           <ImagePopup
             card={selectedCard}
-            onClose={closeAllPopups} />
+            />
+          <InfoTooltip
+          isOpen={isAuthPopupOpen} 
+          isLoggedIn={isLoggedIn}
+          />
         </div >
       </CurrentUserContext.Provider>
     </AppContext.Provider>

@@ -17,7 +17,7 @@ export default function PopupWithForm({ name, title, buttonText, isOpen, onSubmi
           <h2 className="heading form__heading form__heading_type_input">{title}</h2>
           {children}
           <button type="submit"
-            className={`button form__submit text ${isValid ? '' : 'form__submit_inactive'}`}
+            className={`button form__submit form__submit_type_popup text ${isValid ? '' : 'form__submit_inactive'}`}
             disabled={!isValid}
           >{buttonText}</button>
         </form>

@@ -31,7 +31,7 @@ export default function AddPlacePopup({ isOpen, onAddPlace }) {
       onSubmit={handleSubmit}
       isValid={isValid}>
       {<fieldset className="form__field form__field_profile-info">
-        <input className="form__input form__input_el_heading"
+        <input className="form__input form__input_type_popup form__input_el_heading"
           value={values.name || ''}
           onChange={handleChange}
           id="heading-input"
@@ -44,7 +44,7 @@ export default function AddPlacePopup({ isOpen, onAddPlace }) {
           maxLength="30"
           required />
         <span className={`heading-input-error form__input-error ${errors.name ? 'form__input-error_active' : ''}`}>{errors.name}</span>
-        <input className="form__input form__input_el_image"
+        <input className="form__input form__input_type_popup form__input_el_image"
           value={values.link || ''}
           onChange={handleChange}
           id="image-input"

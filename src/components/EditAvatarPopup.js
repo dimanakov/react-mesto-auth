@@ -40,7 +40,7 @@ export default function EditAvatarPopup({ isOpen, onUpdateAvatar }) {
       onSubmit={handleSubmit}
       isValid={isValid}>
       {<fieldset className="form__field form__field_profile-avatar">
-        <input className="form__input form__input_el_avatar"
+        <input className="form__input form__input_type_popup form__input_el_avatar"
           onChange={handleValue}
           ref={avatarRef}
           id="avatar-input"

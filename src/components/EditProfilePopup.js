@@ -41,7 +41,7 @@ export default function EditProfilePopup({ isOpen, onUpdateUser }) {
       isValid={isValid}
       onSubmit={handleSubmit}>
       <fieldset className="form__field form__field_profile-info">
-        <input className="form__input form__input_el_name"
+        <input className="form__input form__input_type_popup form__input_el_name"
           value={values.name || ''}
           onChange={handleChange}
           id="name-input"
@@ -54,7 +54,7 @@ export default function EditProfilePopup({ isOpen, onUpdateUser }) {
           maxLength="40"
           required />
         <span className={`name-input-error form__input-error ${errors.name ? 'form__input-error_active' : ''}`}>{errors.name}</span>
-        <input className="form__input form__input_el_profession"
+        <input className="form__input form__input_type_popup form__input_el_profession"
           value={values.about || ''}
           onChange={handleChange}
           id="profession-input"

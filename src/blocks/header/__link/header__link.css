@@ -1,0 +1,13 @@
+.header__link {
+  margin: 0 auto;
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 22px;
+  cursor: url('../../../images/cursor-pointer.svg') 12 0, pointer;
+  transition: opacity .5s ease;
+}
+
+.header__link:hover {
+    opacity: .6;
+}
