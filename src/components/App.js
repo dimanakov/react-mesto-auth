@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import '../index.css';
 import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
 import AuthForm from './AuthForm';
 import api from '../utils/Api.js';
+import Auth from '../utils/Auth';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import { AppContext } from '../contexts/AppContext'
+import { AppContext } from '../contexts/AppContext';
+import { UserEmailContext } from '../contexts/UserEmailContext';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmPopup from './ConfirmPopup';
 import ImagePopup from './ImagePopup';
 import InfoTooltip from './InfoTooltip';
+import ProtectedRoute from './ProtectedRoute';
 
 export default function App() {
+
+  const navigate = useNavigate();
+  const { register, login, getUserAuth } = Auth({});
 
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
@@ -24,13 +30,13 @@ export default function App() {
   const [isAuthPopupOpen, setAuthPopupOpen] = useState(false);
   const [selectedCard, handleCardClick] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-const [isLoggedIn, setLoggedIn] = useState(false);
-const [authMessage, setAuthMessage] = useState('');
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [isRegisterSucces, setRegisterSucces] = useState(null);
 
   const [currentUser, setCurrentUser] = useState({});
+  const [userEmail, setUserEmail] = useState('');
   const [cards, setCardsData] = useState([]);
   const [element, setElement] = useState({}); // стейт для карточки на удаление
-
 
   function handleEditAvatarClick() {
     setEditAvatarPopupOpen(true)
@@ -74,7 +80,7 @@ const [authMessage, setAuthMessage] = useState('');
     setIsLoading(true);
     api.setUserInfo(data)
       .then((userInfo) => {
-        setCurrentUser(userInfo);
+        setCurrentUser({ ...currentUser, ...userInfo });
         closeAllPopups();
       })
       .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
@@ -87,7 +93,7 @@ const [authMessage, setAuthMessage] = useState('');
     setIsLoading(true);
     api.setUserAvatar(link)
       .then((userInfo) => {
-        setCurrentUser(userInfo);
+        setCurrentUser({ ...currentUser, ...userInfo });
         closeAllPopups();
       })
       .catch((err) => {             //попадаем сюда если промис завершится ошибкой 
@@ -137,89 +143,133 @@ const [authMessage, setAuthMessage] = useState('');
       .finally(() => { setIsLoading(false) });
   }
 
-  function handleSubmitLogin() {
-    console.log('Working on Login ...')
-    handleAuthResult();
+  function handleSubmitLogin(email, password) {
+    setIsLoading(true);
+    login(email, password)
+      .then((res) => {
+        localStorage.setItem('jwt', res.token)
+        setLoggedIn(true);
+        setUserEmail(email);
+        navigate('/', { replace: true })
+      })
+      .catch((err) => {             //попадаем сюда если один из промисов завершится ошибкой 
+        console.error(err);
+      })
+      .finally(() => { setIsLoading(false) });
   }
 
-  function handleSubmitRegister() {
-    console.log('Working on Register ...')
-    handleAuthResult();
+  function handleSubmitRegister(email, password) {
+    setIsLoading(true);
+    register(email, password)
+      .then((res) => {
+        setRegisterSucces(true);
+        navigate('/sign-in', { replace: true })
+      })
+      .catch((err) => {             //попадаем сюда если один из промисов завершится ошибкой 
+        console.error(err);
+        setRegisterSucces(false);
+      })
+      .finally(() => {
+        handleAuthResult();
+        setIsLoading(false);
+      });
   }
 
-  useEffect(() => {   //запрос данных отправляется 2 раза из-за srtict-mode
-    function getUserData() {
-      Promise.all([
-        api.getUserInfo(),
-        api.getInitialCards()
-      ])
-        .then(([userData, initialCards]) => {
-          setCurrentUser(userData);
-          setCardsData(initialCards);
+  function getUserData() {
+    Promise.all([
+      api.getUserInfo(),
+      api.getInitialCards()
+    ])
+      .then(([userData, initialCards]) => {
+        setCurrentUser(userData);
+        setCardsData(initialCards);
+      })
+      .catch((err) => {             //попадаем сюда если один из промисов завершится ошибкой 
+        console.error(err);
+      });
+  }
+
+  function checkToken() {  //проверка токена
+    if (localStorage.getItem('jwt')) {
+      const jwt = localStorage.getItem('jwt');
+      getUserAuth(jwt)
+        .then((res) => {
+          setUserEmail(res?.data.email);
+          res ? navigate('/', { replace: true }) : navigate('/sign-in', { replace: true });
+          setLoggedIn(true);
         })
         .catch((err) => {             //попадаем сюда если один из промисов завершится ошибкой 
           console.error(err);
-        });
+        })
     }
+  }
+
+  useEffect(() => {
     getUserData();
-  }, []) // пустая зависимость для однократного вызова эффекта
+    checkToken();
+    // eslint-disable-next-line
+  }, []);
 
   return (    //визуальное содержимое компонента App вставляемое на главную страницу index
     <AppContext.Provider value={{ isLoading, closeAllPopups }}>
       <CurrentUserContext.Provider value={currentUser}>
-        <div className="page">
-          <Header />
-          <Routes>
-            <Route path='/'
-              element={<Main
-                onEditAvatar={handleEditAvatarClick}
-                onEditProfile={handleEditProfileClick}
-                onAddPlace={handleAddPlaceClick}
-                onRemoveCard={handleRemovePlaceClick}
-                onCardClick={handleCardClick}
-                onCardLike={handleCardLike}
-                cards={cards} />} />
-
-            <Route path='/sign-in'
-              element={<AuthForm
-                name='login'
-                onSubmit={handleSubmitLogin}
-                title='Войти' 
-                buttonText='Войти'
-                buttonTextAction='Вход...'/>} />
-
-            <Route path='/sign-up'
-              element={<AuthForm
-                name='register'
-                onSubmit={handleSubmitRegister}
-                title='Регистрация' 
-                buttonText='Зарегистрироваться'
-                buttonTextAction='Регистрация...'/>} />
-          </Routes>
-          <Footer />
-          <EditAvatarPopup
-            onUpdateAvatar={handleUpdateAvatar}
-            isOpen={isEditAvatarPopupOpen}
-             />
-          <EditProfilePopup
-            onUpdateUser={handleUpdateUser}
-            isOpen={isEditProfilePopupOpen}
+        <UserEmailContext.Provider value={userEmail}>
+          <div className="page">
+            <Header isLoggedIn={isLoggedIn}
+              setLoggedIn={setLoggedIn} />
+            <Routes>
+              <Route
+                path='/'
+                element={<ProtectedRoute
+                  element={Main}
+                  isLoggedIn={isLoggedIn}
+                  onEditAvatar={handleEditAvatarClick}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onRemoveCard={handleRemovePlaceClick}
+                  onCardClick={handleCardClick}
+                  onCardLike={handleCardLike}
+                  cards={cards} />} />
+              <Route path='/sign-in'
+                element={<AuthForm
+                  name='login'
+                  onSubmit={handleSubmitLogin}
+                  title='Войти'
+                  buttonText='Войти'
+                  buttonTextAction='Вход...' />} />
+              <Route path='/sign-up'
+                element={<AuthForm
+                  name='register'
+                  onSubmit={handleSubmitRegister}
+                  title='Регистрация'
+                  buttonText='Зарегистрироваться'
+                  buttonTextAction='Регистрация...' />} />
+            </Routes>
+            <Footer />
+            <EditAvatarPopup
+              onUpdateAvatar={handleUpdateAvatar}
+              isOpen={isEditAvatarPopupOpen}
             />
-          <AddPlacePopup
-            onAddPlace={handleAddPlaceSubmit}
-            isOpen={isAddPlacePopupOpen}
+            <EditProfilePopup
+              onUpdateUser={handleUpdateUser}
+              isOpen={isEditProfilePopupOpen}
             />
-          <ConfirmPopup
-            isOpen={isConfirmPopupOpen}
-            onConfirm={handleRemovePlaceConfirm} />
-          <ImagePopup
-            card={selectedCard}
+            <AddPlacePopup
+              onAddPlace={handleAddPlaceSubmit}
+              isOpen={isAddPlacePopupOpen}
             />
-          <InfoTooltip
-          isOpen={isAuthPopupOpen} 
-          isLoggedIn={isLoggedIn}
-          />
-        </div >
+            <ConfirmPopup
+              isOpen={isConfirmPopupOpen}
+              onConfirm={handleRemovePlaceConfirm} />
+            <ImagePopup
+              card={selectedCard}
+            />
+            <InfoTooltip
+              isOpen={isAuthPopupOpen}
+              resultRegister={isRegisterSucces}
+            />
+          </div >
+        </UserEmailContext.Provider>
       </CurrentUserContext.Provider>
     </AppContext.Provider>
   )

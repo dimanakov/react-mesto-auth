@@ -12,10 +12,10 @@ export default function AuthForm({ name, title, buttonText, buttonTextAction, on
     // Запрещаем браузеру переходить по адресу формы
     e.preventDefault();
     // Передаём значения управляемых компонентов во внешний обработчик
-    onSubmit({
-      email: values.email,
-      password: values.password,
-    })
+    onSubmit(
+      values.email,
+      values.password,
+    )
   }
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function AuthForm({ name, title, buttonText, buttonTextAction, on
 
   return (
     <section className='authorization'>
-      <form className={`form form_${name}`}
+      <form className={`form form_type_auth form_${name}`}
         name={`${name}-form`}
         onSubmit={handleSubmit}>
         <h2 className="heading form__heading form__heading_type_authorization">{title}</h2>
@@ -64,11 +64,11 @@ export default function AuthForm({ name, title, buttonText, buttonTextAction, on
         <div className='authorization__menu'>
           {name === 'register' && <NavLink to="/sign-in" className="authorization__link-to-login">Уже зарегистрированы? Войти</NavLink>}
         </div>
-        <nav style={{ display: 'flex', 'column-gap': '15px' }} className="menu">
+        {/* <nav style={{ display: 'flex', 'column-gap': '15px' }} className="menu">
           <NavLink style={{ color: '#fff' }} to="/" className="menu__link">Карточки</NavLink>
           <NavLink style={{ color: '#fff' }} to="/sign-in" className="menu__link">Войти</NavLink>
           <NavLink style={{ color: '#fff' }} to="/sign-up" className="menu__link">Регистрация</NavLink>
-        </nav>
+        </nav> */}
       </form>
     </section>
   )

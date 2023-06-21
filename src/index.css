@@ -24,6 +24,8 @@ code {
 @import url('./blocks/header/header.css');
 @import url('./blocks/logo/logo.css');
 @import url('./blocks/header/__link/header__link.css');
+@import url('./blocks/header/__menu/header__menu.css');
+@import url('./blocks/header/__currentUser/header__currentUser.css');
 /* authorization */
 @import url('./blocks/authorization/authorization.css');
 @import url('./blocks/authorization/__menu/authorization__menu.css');
@@ -37,6 +39,7 @@ code {
 @import url('./blocks/profile/__profession/profile__profession.css');
 @import url('./blocks/profile/__avatar/profile__avatar.css');
 @import url('./blocks/button/button.css');
+@import url('./blocks/button/_header/button_header.css');
 @import url('./blocks/button/_focus/button_focus.css');
 @import url('./blocks/profile/__edit-button/profile__edit-button.css');
 @import url('./blocks/text/text.css');
@@ -69,6 +72,8 @@ code {
 @import url('./blocks/auth/__heading/auth__heading.css');
 /* form */
 @import url('./blocks/form/form.css');
+@import url('./blocks/form/_type/form_type_popup.css');
+@import url('./blocks/form/_type/form_type_auth.css');
 @import url('./blocks/form/__field/form__field.css');
 @import url('./blocks/form/__heading/form__heading.css');
 @import url('./blocks/form/__input/form__input.css');

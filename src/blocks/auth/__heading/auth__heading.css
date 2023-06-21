@@ -7,6 +7,9 @@
 
 @media (max-width: 920px) {
   .auth__heading {
+    max-width: 244px;
     margin: 0 18px 50px;
+    font-size: 20px;
+    line-height: 24px;
   }
 }
